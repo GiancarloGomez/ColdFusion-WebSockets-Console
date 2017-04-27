@@ -57,7 +57,7 @@
 					<div class="form-group">
 						<label for="msg" class="control-label col-sm-2">Component</label>
 						<div class="col-sm-10">
-							<input id="cfcname" class="form-control" name="cfcname" type="text" value="" placeholder="console.invokeandpublish" list="cfcs" />
+							<input id="cfcname" class="form-control" name="cfcname" type="text" value="" placeholder="invokeAndPublish" list="cfcs" />
 							<small class="help-block">Enter the name of the CFC to invoke (dot syntax)</small>
 						</div>
 					</div>
@@ -93,7 +93,7 @@
 		</cfloop>
 	</datalist>
 	<datalist id="cfcs">
-		<option value="invokeandpublish">
+		<option value="invokeAndPublish">
 	</datalist>
 	<datalist id="functions">
 		<option value="publish">
