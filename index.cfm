@@ -7,7 +7,6 @@
 	<link rel="icon" href="favicon.png">
 	<link rel="author" href="humans.txt" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700">
 	<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -106,7 +105,6 @@
 	<cfwebsocket 	name="mywsobj"
 					onMessage="messageHandler"
 					onOpen="openHandler"
-					onError="errorHandler"
-					secure="#cgi.server_port_secure#" />
+					onError="errorHandler" />
 </body>
 </html>
