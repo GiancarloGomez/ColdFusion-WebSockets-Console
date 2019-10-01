@@ -6,6 +6,8 @@
         output      : document.getElementById("output"),
         channelname : document.getElementById("channelname"),
         username    : document.getElementById("username"),
+        password    : document.getElementById("password"),
+        customHeader: document.getElementById("customHeader"),
         message     : document.getElementById("msg"),
         cfcname     : document.getElementById("cfcname"),
         fnname      : document.getElementById("fnname"),
@@ -37,6 +39,47 @@ UI.buttons.stop.addEventListener("click",stopSocket);
 UI.buttons.open.addEventListener("click",openSocket);
 UI.buttons.check.addEventListener("click",checkSocket);
 UI.buttons.clear.addEventListener("click",clearLog);
+
+UI.customHeader.addEventListener("click",function(event){
+    if (event.target.type && event.target.type === 'button'){
+        var button = event.target;
+        if (button.dataset.role === 'add')
+            addCustomHeaderRow()
+        else
+            deleteCustomHeaderRow(button);
+        event.preventDefault();
+    }
+});
+
+function addCustomHeaderRow(){
+    var tr = document.createElement('tr');
+    tr.innerHTML = `
+    <td><input type="text" name="customHeaderKey" value="" class="form-control" placeholder="key" /></td>
+    <td><input type="text" name="customHeaderValue" value="" class="form-control" placeholder="value" /></td>
+    <td class="text-nowrap">
+        <button type="button" class="btn btn-default" data-role="delete">&times  ;</button>
+        <button type="button" class="btn btn-default" data-role="add">&plus;</button>
+    </td>
+    `;
+    UI.customHeader.appendChild(tr);
+}
+
+function deleteCustomHeaderRow(button){
+    UI.customHeader.removeChild(button.parentNode.parentNode);
+}
+
+function buildCustomHeader(){
+    var header = {},
+        keys = Array.from(UI.customHeader.querySelectorAll('input[name=customHeaderKey]'))
+        values = Array.from(UI.customHeader.querySelectorAll('input[name=customHeaderValue]'));
+
+    keys.forEach(function(key,index){
+        var label = key.value.toString().trim();
+        if (label.length)
+            header[label] = values[index].value.toString().trim();
+    });
+    return header;
+}
 
 function parseJSONResponse(message){
     return JSON.stringify(message)
@@ -76,17 +119,19 @@ function errorHandler(messageobj) {
 }
 
 function subscribeMe(e){
+    var header = buildCustomHeader();
     e.target.blur();
     if(checkSocketAccess()){
         if (UI.channelname.value === 'chat'){
             if (UI.username.value !== ''){
-                mywsobj.authenticate(UI.username.value,'');
-                mywsobj.subscribe(UI.channelname.value,{username:UI.username.value});
+                mywsobj.authenticate(UI.username.value,UI.password.value);
+                header.username = UI.username.value;
+                mywsobj.subscribe(UI.channelname.value,header);
             } else {
                 writeToConsole('Username required when attempting to connect to chat room','alert alert-warning');
             }
         } else {
-            mywsobj.subscribe(UI.channelname.value);
+            mywsobj.subscribe(UI.channelname.value,header);
         }
 
     }
@@ -108,7 +153,8 @@ function publish(e){
     e.target.blur();
     if(checkSocketAccess()){
         if (UI.message.value !== ''){
-            mywsobj.publish(UI.channelname.value,UI.message.value);
+            var header = buildCustomHeader();
+            mywsobj.publish(UI.channelname.value,UI.message.value,header);
             UI.message.value = '';
         } else {
             writeToConsole('Enter a message to publish','alert alert-danger');

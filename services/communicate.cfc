@@ -2,6 +2,7 @@ component
 {
 	remote function publish()
 	{
+		sleep(3000);
 		return "This is the value returned from publish()";
 	}
 

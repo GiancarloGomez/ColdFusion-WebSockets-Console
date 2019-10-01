@@ -32,7 +32,6 @@ table.cfdump_binary, table.cfdump_udf, table.cfdump_udfbody, table.cfdump_udfarg
 }
 
 #output{
-	height:667px;
 	overflow-y:scroll;
 	margin:0;
 }
@@ -46,4 +45,63 @@ table.cfdump_binary, table.cfdump_udf, table.cfdump_udfbody, table.cfdump_udfarg
 .list-unstyled li strong{ font-size: 1.2em;}
 ::-webkit-input-placeholder {
    color: #aaa !important;
+}
+
+.flex-row,
+.flex-buttons{
+	display: flex;
+	justify-content:space-between;
+}
+.flex-row{
+	margin-bottom:20px;
+}
+.flex-row .col{
+	width:calc(50% - 10px);
+	display: flex;
+}
+.flex-row .col div.well,
+.flex-row .col form{
+	width:100%;
+}
+.flex-row .col div.well {
+	max-height: calc(100vh - 100px );
+}
+.flex-buttons button.btn-block {
+	margin:0 !important;
+	width:calc(50% - 5px);
+}
+#action-buttons{
+	display: flex;
+	justify-content: center;
+}
+#action-buttons button {
+	margin:0 5px;
+}
+
+@media ( max-width: 770px) {
+	.flex-row {
+		flex-wrap: wrap;
+	}
+	.flex-row .col{
+		width:100%;
+	}
+	.flex-row .col div.well{
+		height:400px;
+		max-height: 400px;
+	}
+	#action-buttons {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		margin:0 -15px;
+		border-width:0 0 2px 0;
+		border-radius:0;
+		z-index:10;
+	}
+	#action-buttons button {
+		font-size: 12px;
+	}
+	body {
+		padding-top:40px;
+	}
 }

@@ -12,7 +12,7 @@
 <body>
 	<div class="container-fluid top-20">
 
-		<div class="well well-sm text-center">
+		<div class="well well-sm text-center" id="action-buttons">
 			<button type="button" id="open" class="btn btn-success">Open Socket</button>
 			<button type="button" id="stop" class="btn btn-danger">Stop Socket</button>
 			<button type="button" id="check" class="btn btn-warning">Check Socket</button>
@@ -21,68 +21,68 @@
 			<button type="button" id="clear" class="btn btn-default">Clear Log</button>
 		</div>
 
-		<div class="row">
-
-			<div class="col-sm-6">
-				<form name="f" class="form-horizontal" role="form">
+		<div class="flex-row">
+			<div class="col">
+				<form name="f" role="form">
 					<div class="form-group">
-						<label for="channelname" class="control-label col-sm-2">Channel</label>
-						<div class="col-sm-10">
-							<input id="channelname" name="channelname" class="form-control" type="text" value="" placeholder="websockets" list="channels" />
-							<small class="help-block">Enter the channel name to subscribe to. Value is also used all functions below.</small>
-						</div>
+						<label for="channelname" class="control-label">Channel</label>
+						<input id="channelname" name="channelname" class="form-control" type="text" value="" placeholder="Channel Name" list="channels" />
+						<small class="help-block">Enter the channel name to subscribe / publish to</small>
 					</div>
 					<div class="form-group">
-						<label for="username" class="control-label col-sm-2">Username</label>
-						<div class="col-sm-10">
-							<input id="username" name="username" class="form-control" type="text" value="" placeholder="Enter a Username" />
-							<small class="help-block">Use this if the channel you want to join requires it.</small>
-						</div>
+						<label for="username" class="control-label">Authentication</label>
+						<input id="username" name="username" class="form-control" type="text" value="" placeholder="Username" />
 					</div>
 					<div class="form-group">
-						<div class="col-sm-10 col-sm-offset-2">
-							<input id="subscribe" class="btn btn-primary" type="button" value="Subscribe" />
-							<input id="unsubscribe" class="btn btn-danger" type="button" value="Unsubscribe" />
-						</div>
+						<input id="password" name="password" class="form-control" type="password" value="" placeholder="Password" />
+						<small class="help-block">Use this if the channel you want to join requires it</small>
 					</div>
 					<div class="form-group">
-						<label for="msg" class="control-label col-sm-2">Message</label>
-						<div class="col-sm-10">
-							<textarea id="msg" class="form-control" placeholder="Enter Message" rows="8"></textarea>
-							<br />
-							<input id="publish" type="button" value="Publish" class="btn btn-success">
-						</div>
+						<label for="customHeader" class="control-label">Custom Header</label>
+						<table class="table" style="margin-bottom:0;">
+							<tbody id="customHeader">
+								<tr>
+									<td><input type="text" name="customHeaderKey" value="" class="form-control" placeholder="key" /></td>
+									<td><input type="text" name="customHeaderValue" value="" class="form-control" placeholder="value" /></td>
+									<td style="width:90px;"><button type="button" class="btn btn-default" data-role="add">&plus;</button></td>
+								</tr>
+							</tbody>
+						</table>
+						<small class="help-block">Custom header key=>values for subscribing or publishing</small>
+					</div>
+					<div class="form-group flex-buttons">
+						<button id="subscribe" class="btn btn-primary btn-block" type="button">Subscribe</button>
+						<button id="unsubscribe" class="btn btn-danger btn-block" type="button">Unsubscribe</button>
 					</div>
 					<div class="form-group">
-						<label for="msg" class="control-label col-sm-2">Component</label>
-						<div class="col-sm-10">
-							<input id="cfcname" class="form-control" name="cfcname" type="text" value="" placeholder="invokeAndPublish" list="cfcs" />
-							<small class="help-block">Enter the name of the CFC to invoke (dot syntax)</small>
-						</div>
+						<label for="msg" class="control-label">Message</label>
+						<textarea id="msg" class="form-control" placeholder="Enter Message" rows="4"></textarea>
 					</div>
 					<div class="form-group">
-						<label for="fnname" class="control-label col-sm-2">Function</label>
-						<div class="col-sm-10">
-							<input id="fnname" class="form-control" name="fnname" type="text" value="" placeholder="publish" list="functions" />
-							<small class="help-block">Enter the name of the function to invoke</small>
-						</div>
+						<button id="publish" type="button" class="btn btn-block btn-success">Publish</button>
 					</div>
 					<div class="form-group">
-						<div class="col-sm-10 col-sm-offset-2">
-							<input id="invoke" type="button" value="Invoke" class="btn btn-success" />
-							<input id="invokeAndPublish" type="button" value="Invoke And Publish" class="btn btn-primary"/>
-						</div>
+						<label for="msg" class="control-label">Component</label>
+						<input id="cfcname" class="form-control" name="cfcname" type="text" value="" placeholder="CFC Name" list="cfcs" />
+						<small class="help-block">Enter the name of the CFC to invoke (dot syntax)</small>
+					</div>
+					<div class="form-group">
+						<label for="fnname" class="control-label">Function</label>
+						<input id="fnname" class="form-control" name="fnname" type="text" value="" placeholder="CFC Function" list="functions" />
+						<small class="help-block">Enter the name of the function to invoke</small>
+					</div>
+					<div class="form-group flex-buttons">
+						<button id="invoke" type="button" class="btn btn-success btn-block">Invoke</button>
+						<button id="invokeAndPublish" type="button" class="btn btn-primary btn-block">Invoke And Publish</button>
 					</div>
 				</form>
 			</div>
-
-			<div class="col-sm-6">
+			<div class="col">
 				<div class="well well-small" id="output">
 					<ul id="_console" class="list-unstyled">
 					</ul>
 				</div>
 			</div>
-
 		</div>
 	</div>
 	<cfoutput>
@@ -92,7 +92,7 @@
 		</cfloop>
 	</datalist>
 	<datalist id="cfcs">
-		<option value="invokeAndPublish">
+		<option value="services.communicate">
 	</datalist>
 	<datalist id="functions">
 		<option value="publish">
