@@ -1,7 +1,6 @@
  // Enhanced Version of example code found at
  // https://helpx.adobe.com/coldfusion/developing-applications/coldfusion-and-html-5/using-coldfusion-websocket/using-websocket-to-broadcast-messages.html
-
- var UI = {
+const UI = {
         console     : document.getElementById("_console"),
         output      : document.getElementById("output"),
         channelname : document.getElementById("channelname"),
@@ -12,6 +11,7 @@
         cfcname     : document.getElementById("cfcname"),
         fnname      : document.getElementById("fnname"),
         buttons     : {
+            authenticate        : document.getElementById("authenticate"),
             subscribe           : document.getElementById("subscribe"),
             unsubscribe         : document.getElementById("unsubscribe"),
             getSubscribers      : document.getElementById("getSubscribers"),
@@ -23,10 +23,14 @@
             open                : document.getElementById("open"),
             check               : document.getElementById("check"),
             clear               : document.getElementById("clear")
+        },
+        authenticated : {
+            username: null
         }
 };
 
 // register click events for each button
+UI.buttons.authenticate.addEventListener("click",authenticateMe);
 UI.buttons.subscribe.addEventListener("click",subscribeMe);
 UI.buttons.unsubscribe.addEventListener("click",unsubscribeMe);
 UI.buttons.getSubscribers.addEventListener("click",getSubscribers);
@@ -51,21 +55,30 @@ UI.customHeader.addEventListener("click",function(event){
     }
 });
 
+function authenticateMe(e){
+    e.target.blur();
+    if ( UI.username.value.toString().trim() === '' ){
+        openDialog({
+            message: '<div class="text-center">Enter credentials to authenticate</div>'
+        });
+        writeToConsole('Enter credentials to authenticate','alert alert-danger');
+    }
+    else {
+        UI.authenticated.username = UI.username.value;
+        ws.authenticate(UI.username.value,UI.password.value);
+    }
+}
+
 function addCustomHeaderRow(){
     var tr = document.createElement('tr');
     tr.innerHTML = `
     <td><input type="text" name="customHeaderKey" value="" class="form-control" placeholder="key" /></td>
     <td><input type="text" name="customHeaderValue" value="" class="form-control" placeholder="value" /></td>
     <td class="text-nowrap">
-        <button type="button" class="btn btn-default" data-role="delete">&times  ;</button>
-        <button type="button" class="btn btn-default" data-role="add">&plus;</button>
+        <button type="button" class="btn btn-danger btn-sm" data-role="delete">&times;</button>
     </td>
     `;
-    UI.customHeader.appendChild(tr);
-}
-
-function deleteCustomHeaderRow(button){
-    UI.customHeader.removeChild(button.parentNode.parentNode);
+    UI.customHeader.querySelector('tbody').appendChild(tr);
 }
 
 function buildCustomHeader(){
@@ -81,127 +94,16 @@ function buildCustomHeader(){
     return header;
 }
 
-function parseJSONResponse(message){
-    return JSON.stringify(message)
-        .replace(/,"/g,',<br />&nbsp;&nbsp;"')
-        .replace('{','{<br />&nbsp;&nbsp;')
-        .replace('}','<br />}');
-}
-
-function writeToConsole(message,classname){
-    var _li = document.createElement('li');
-    _li.setAttribute('class', classname || 'default');
-    _li.innerHTML = message;
-    UI.console.appendChild(_li);
-    // animate scroll
-    if (_li.offsetTop + _li.offsetHeight > UI.output.offsetHeight)
-        scrollTo(UI.output, (_li.offsetTop + _li.offsetHeight + 11) - UI.output.offsetHeight, 250);
-}
-
-function clearLog(e){
-    UI.console.innerHTML = '';
-    e.target.blur();
-}
-
-//messagehandler recieves all the messages from websocket
-function messageHandler(messageobj) {
-    writeToConsole(parseJSONResponse(messageobj), messageobj.type !== 'data' ? 'alert alert-info' : '');
-}
-
-//openhandler is invoked when socket connection is
-function openHandler(){
-    writeToConsole('OPEN HANDLER INVOKED','alert alert-success');
-}
-
-//openhandler is invoked when a socket error occurs
-function errorHandler(messageobj) {
-    writeToConsole(parseJSONResponse(messageobj),'alert alert-warning');
-}
-
-function subscribeMe(e){
-    var header = buildCustomHeader();
-    e.target.blur();
-    if(checkSocketAccess()){
-        if (UI.channelname.value === 'chat'){
-            if (UI.username.value !== ''){
-                mywsobj.authenticate(UI.username.value,UI.password.value);
-                header.username = UI.username.value;
-                mywsobj.subscribe(UI.channelname.value,header);
-            } else {
-                writeToConsole('Username required when attempting to connect to chat room','alert alert-warning');
-            }
-        } else {
-            mywsobj.subscribe(UI.channelname.value,header);
-        }
-
-    }
-}
-
-function getSubscribers(e){
-    e.target.blur();
-    if(checkSocketAccess())
-        mywsobj.getSubscriberCount(UI.channelname.value);
-}
-
-function unsubscribeMe(e){
-    e.target.blur();
-    if(checkSocketAccess())
-        mywsobj.unsubscribe(UI.channelname.value);
-}
-
-function publish(e){
-    e.target.blur();
-    if(checkSocketAccess()){
-        if (UI.message.value !== ''){
-            var header = buildCustomHeader();
-            mywsobj.publish(UI.channelname.value,UI.message.value,header);
-            UI.message.value = '';
-        } else {
-            writeToConsole('Enter a message to publish','alert alert-danger');
-        }
-    }
-}
-
-function getSubscriptions(e){
-    e.target.blur();
-    if(checkSocketAccess())
-        mywsobj.getSubscriptions();
-}
-
-function invokeAndPublish(e){
-    e.target.blur();
-    if(checkSocketAccess())
-        mywsobj.invokeAndPublish(UI.channelname.value, UI.cfcname.value, UI.fnname.value);
-}
-
-function invoke(e){
-    e.target.blur();
-    if(checkSocketAccess())
-        mywsobj.invoke(UI.cfcname.value, UI.fnname.value);
-}
-
-function openSocket(e){
-    e.target.blur();
-    writeToConsole('OPENING SOCKET','alert alert-success');
-    mywsobj.openConnection();
-}
-
-function stopSocket(e){
-    e.target.blur();
-    writeToConsole('CLOSING SOCKET','alert alert-danger');
-    mywsobj.closeConnection();
-}
-
 function checkSocket(e){
     e.target.blur();
-    if (mywsobj.isConnectionOpen())
+    if (ws.isConnectionOpen())
         writeToConsole('SOCKET IS OPEN','alert alert-success');
     else
         writeToConsole('SOCKET IS CLOSED','alert alert-danger');
 }
 
 function checkSocketAccess(){
-    if (mywsobj.isConnected()){
+    if (ws.isConnected()){
         return true;
     } else {
         writeToConsole('SOCKET IS NOT CONNECTED - FUNCTION COULD NOT BE PROCESSED','alert alert-danger');
@@ -209,30 +111,127 @@ function checkSocketAccess(){
     }
 }
 
-// https://gist.github.com/andjosh/6764939
-    function scrollTo(element, to, duration) {
-        var start = element.scrollTop,
-            change = to - start,
-            currentTime = 0,
-            increment = 20;
+function clearLog(e){
+    UI.console.innerHTML = '';
+    e.target.blur();
+}
 
-        var animateScroll = function(){
-            currentTime += increment;
-            var val = Math.easeInOutQuad(currentTime, start, change, duration);
-            element.scrollTop = val;
-            if(currentTime < duration) {
-                setTimeout(animateScroll, increment);
-            }
-        };
-        animateScroll();
+function deleteCustomHeaderRow(button){
+    UI.customHeader.querySelector('tbody').removeChild(button.parentNode.parentNode);
+}
+
+function getSubscribers(e){
+    e.target.blur();
+    if(checkSocketAccess())
+        ws.getSubscriberCount(UI.channelname.value);
+}
+
+function getSubscriptions(e){
+    e.target.blur();
+    if(checkSocketAccess())
+        ws.getSubscriptions();
+}
+
+function invoke(e){
+    e.target.blur();
+    if(checkSocketAccess())
+        ws.invoke(UI.cfcname.value, UI.fnname.value);
+}
+
+function invokeAndPublish(e){
+    e.target.blur();
+    if(checkSocketAccess())
+        ws.invokeAndPublish(UI.channelname.value, UI.cfcname.value, UI.fnname.value);
+}
+
+// invoked when a socket error occurs
+function onError(messageobj) {
+    if ( messageobj.type === 'subscribe' ){
+        openDialog({
+            message: '<div class="text-center">The channel you requested required authentication</div>'
+        });
     }
-    //t = current time
-    //b = start value
-    //c = change in value
-    //d = duration
-    Math.easeInOutQuad = function (t, b, c, d) {
-      t /= d/2;
-        if (t < 1) return c/2*t*t + b;
-        t--;
-        return -c/2 * (t*(t-2) - 1) + b;
-    };
+    else if ( messageobj.type === 'response' && ( messageobj.reqType || '' ) === 'authenticate' ){
+        openDialog({
+            message: '<div class="text-center">Invalid user</div>'
+        });
+        UI.authenticated.username = null;
+    }
+    writeToConsole(parseJSONResponse(messageobj),'alert alert-danger');
+}
+
+// recieves all the messages from websocket
+function onMessage(messageobj) {
+    writeToConsole(parseJSONResponse(messageobj), messageobj.type !== 'data' ? 'alert alert-info' : '');
+}
+
+// invoked when socket connection is
+function onOpen(){
+    writeToConsole('OPEN HANDLER INVOKED','alert alert-success');
+}
+
+function openSocket(e){
+    e.target.blur();
+    writeToConsole('OPENING SOCKET','alert alert-success');
+    ws.openConnection();
+}
+
+function parseJSONResponse(message){
+    if ( typeof message.data === 'string' )
+        message.data = message.data.replace(/\t|\n/g,'');
+    return JSON.stringify(message)
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/,"/g,',<br />&nbsp;&nbsp;"')
+        .replace('{','{<br />&nbsp;&nbsp;')
+        .replace('}','<br />}');
+}
+
+function publish(e){
+    e.target.blur();
+    if(checkSocketAccess()){
+        if (UI.message.value !== ''){
+            var header = buildCustomHeader();
+            ws.publish(UI.channelname.value,UI.message.value,header);
+            UI.message.value = '';
+        } else {
+            writeToConsole('Enter a message to publish','alert alert-danger');
+        }
+    }
+}
+
+function stopSocket(e){
+    e.target.blur();
+    writeToConsole('CLOSING SOCKET','alert alert-danger');
+    ws.closeConnection();
+}
+
+function subscribeMe(e){
+    var header = buildCustomHeader();
+    e.target.blur();
+    if(checkSocketAccess()){
+        if ( UI.channelname.value.toString().trim() === '' )
+            openDialog({ message:'<div class="text-center">Please supply a channel name to subscribe</div>'});
+        else {
+            if ( UI.authenticated.username )
+            header.username = UI.authenticated.username;
+            ws.subscribe(UI.channelname.value,header);
+        }
+    }
+}
+
+function unsubscribeMe(e){
+    e.target.blur();
+    if(checkSocketAccess())
+        ws.unsubscribe(UI.channelname.value);
+}
+
+function writeToConsole(message,classname){
+    var _li = document.createElement('li');
+    _li.setAttribute('class', classname || 'default');
+    _li.innerHTML = message;
+    UI.console.appendChild(_li);
+    _li.scrollIntoView({
+        behavior: 'smooth'
+    });
+}

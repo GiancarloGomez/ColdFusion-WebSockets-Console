@@ -35,10 +35,13 @@ table.cfdump_binary, table.cfdump_udf, table.cfdump_udfbody, table.cfdump_udfarg
 	overflow-y:scroll;
 	margin:0;
 }
+.list-unstyled {
+	margin:0;
+}
 .list-unstyled li{
 	font: normal 12px/1.4em 'Operator Mono Ssm', Menlo, Consolas, monospace;
 	padding:1em;
-	margin:1px 0;
+	margin:2px 0;
 	border-radius:0;
 }
 .list-unstyled li.default{background-color:#fff; border:1px solid #eee;}
@@ -69,6 +72,9 @@ table.cfdump_binary, table.cfdump_udf, table.cfdump_udfbody, table.cfdump_udfarg
 .flex-buttons button.btn-block {
 	margin:0 !important;
 	width:calc(50% - 5px);
+}
+.flex-buttons.of-3 button.btn-block{
+	width:calc(33.3% - 5px);
 }
 #action-buttons{
 	display: flex;
