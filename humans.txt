@@ -4,10 +4,8 @@
 	Twitter: @GiancarloGomez
 	From: Spring Hill, FL USA
 
-/* THANKS */
-
 /* SITE */
-	Last update: 2016-06-16
+	Last update: 2024-09-20
 	Language: ColdFusion, HTML, CSS, JavaScript
 	Doctype:HTML5
-	IDE: Sublime Text
+	IDE: Visual Studio Code

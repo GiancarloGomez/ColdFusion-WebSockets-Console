@@ -3,107 +3,183 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-	<title>WS : Console</title>
-	<link rel="icon" href="favicon.png">
-	<link rel="author" href="humans.txt" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-	<link rel="stylesheet" href="styles.css" />
+	<title>ColdFusion WebSockets Console</title>
+	<link rel="icon" href="assets/favicon.png">
+	<link rel="author" href="humans.txt">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css" integrity="sha256-XfA0ppGOANs88Ds+9FqVLy3xIGzT/25K/VLmRRxE9ow=" crossorigin="anonymous">
+	<link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
-	<div class="container-fluid top-20">
-
-		<div class="well well-sm text-center" id="action-buttons">
-			<button type="button" id="open" class="btn btn-success">Open Socket</button>
-			<button type="button" id="stop" class="btn btn-danger">Stop Socket</button>
-			<button type="button" id="check" class="btn btn-warning">Check Socket</button>
-			<button type="button" id="getSubscribers" class="btn btn-info">Get Subscribers</button>
-			<button type="button" id="getSubscriptions" class="btn btn-info">Get Subscriptions</button>
-			<button type="button" id="clear" class="btn btn-default">Clear Log</button>
-		</div>
-
-		<div class="flex-row">
-			<div class="col">
-				<form name="f" role="form">
-					<div class="well well-sm">
-						<div class="form-group">
-							<label for="username" class="control-label">
+	<main class="d-flex gap-2 p-md-2">
+		<div class="offcanvas-md offcanvas-start" id="console-form">
+			<div class="offcanvas-header pb-0">
+				<h5 class="offcanvas-title" id="offcanvasLabel">
+					WebSockets Console
+				</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#console-form" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<form role="form" class="w-100">
+					<div class="bg-light border p-2 mb-2">
+						<div class="mb-2">
+							<label for="username" class="form-label">
 								Authentication
-								<small class="help-block" style="margin:0; font-weight:400;">Use this if the channel you want to join requires it</small>
 							</label>
-							<input id="username" name="username" class="form-control" type="text" value="" placeholder="Username" />
+							<div class="d-flex gap-2">
+								<input type="text" id="username" class="form-control" placeholder="Username">
+								<input type="password" id="password" class="form-control" placeholder="Password">
+							</div>
+							<small class="form-text">Use this if the channel you want to join requires it</small>
 						</div>
-						<div class="form-group">
-							<input id="password" name="password" class="form-control" type="password" value="" placeholder="Password" />
-						</div>
-						<div class="form-group" style="margin-bottom:0;">
-							<button id="authenticate" class="btn btn-primary btn-block" type="button">Authenticate</button>
-						</div>
+						<button type="button" class="btn btn-primary w-100" data-action="authenticate">
+							Authenticate
+						</button>
 					</div>
-					<div class="well well-sm">
-						<div class="form-group">
-							<table class="table table-striped table-condensed table-bordered" style="margin-bottom:0; background-color:white;" id="customHeader">
+					<div class="bg-light border p-2 mb-2">
+						<div class="mb-2">
+							<label for="channel" class="form-label">Channel</label>
+							<input id="channel" class="form-control" type="text" placeholder="Channel Name" list="channels">
+							<small class="form-text">
+								Enter the channel name to subscribe, unsubscribe or publish to
+							</small>
+						</div>
+						<div class="mb-2">
+							<table class="table table-striped table-sm align-middle  mb-1" id="custom-options">
+								<colgroup>
+									<col width="50%">
+									<col width="50%">
+									<col>
+								</colgroup>
 								<thead>
-									<th colspan="2" style="vertical-align:middle;">Custom Headers</th>
-									<th>
-										<button type="button" class="btn btn-sm btn-success" data-role="add">&plus;</button>
+									<th colspan="2" class="bg-transparent p-0 fw-normal align-middle">
+										Custom Options
+									</th>
+									<th class="bg-transparent ">
+										<button type="button" class="btn btn-sm btn-success" data-action="option-add">
+											<i class="fa-solid fa-fw fa-plus"></i>
+										</button>
 									</th>
 								</thead>
-								<tbody>
-									<tr>
-										<td><input type="text" name="customHeaderKey" value="" class="form-control" placeholder="key" /></td>
-										<td><input type="text" name="customHeaderValue" value="" class="form-control" placeholder="value" /></td>
-										<td></td>
-									</tr>
-								</tbody>
+								<tbody></tbody>
 							</table>
-							<small class="help-block">Custom header key=>values for subscribing or publishing</small>
+							<small class="form-text">
+								Custom options for subscribing and/or publishing
+							</small>
 						</div>
-						<div class="form-group">
-							<label for="channelname" class="control-label">Channel</label>
-							<input id="channelname" name="channelname" class="form-control" type="text" value="" placeholder="Channel Name" list="channels" />
-							<small class="help-block">Enter the channel name to subscribe, unsubscribe or publish to</small>
+						<div class="mb-2 d-flex gap-2">
+							<button type="button" class="btn btn-primary w-50" data-action="subscribe">
+								Subscribe
+							</button>
+							<button type="button" class="btn btn-danger w-50" data-action="unsubscribe">
+								Unsubscribe
+							</button>
 						</div>
-						<div class="form-group flex-buttons">
-							<button id="subscribe" class="btn btn-primary btn-block" type="button">Subscribe</button>
-							<button id="unsubscribe" class="btn btn-danger btn-block" type="button">Unsubscribe</button>
+						<div class="mb-2">
+							<label for="message" class="form-label">Message</label>
+							<textarea id="message" class="form-control" placeholder="Enter Message" rows="4"></textarea>
 						</div>
-						<div class="form-group">
-							<label for="msg" class="control-label">Message</label>
-							<textarea id="msg" class="form-control" placeholder="Enter Message" rows="4"></textarea>
-						</div>
-						<div class="form-group" style="margin-bottom:0;">
-							<button id="publish" type="button" class="btn btn-block btn-success">Publish</button>
-						</div>
+						<button type="button" class="btn btn-success w-100" data-action="publish">
+							Publish
+						</button>
 					</div>
-					<div class="well well-sm" style="margin-bottom:0;">
-						<div class="form-group">
-							<label for="msg" class="control-label">Component</label>
-							<input id="cfcname" class="form-control" name="cfcname" type="text" value="" placeholder="CFC Name" list="cfcs" />
-							<small class="help-block">Enter the name of the CFC to invoke (dot syntax)</small>
+					<div class="bg-light border p-2">
+						<div class="mb-2">
+							<label for="cfcName" class="form-label">Component &amp; Function Name</label>
+							<div class="d-flex gap-2">
+								<input type="text" id="cfcName" class="form-control" placeholder="Component Name" list="cfcs">
+								<input type="text" id="functionName" class="form-control" placeholder="Function Name" list="functions">
+							</div>
+							<small class="form-text">
+								Enter the name of the <code>cfc</code> ( dot syntax ) and <code>function</code> to invoke
+							</small>
 						</div>
-						<div class="form-group">
-							<label for="fnname" class="control-label">Function</label>
-							<input id="fnname" class="form-control" name="fnname" type="text" value="" placeholder="CFC Function" list="functions" />
-							<small class="help-block">Enter the name of the function to invoke</small>
+						<div class="mb-2">
+							<table class="table table-striped table-sm align-middle mb-1" id="arguments">
+								<colgroup>
+									<col width="100%">
+									<col>
+								</colgroup>
+								<thead>
+									<th class="bg-transparent p-0 fw-normal align-middle">
+										Arguments
+									</th>
+									<th class="bg-transparent">
+										<button type="button" class="btn btn-sm btn-success" data-action="argument-add">
+											<i class="fa-solid fa-fw fa-plus"></i>
+										</button>
+									</th>
+								</thead>
+								<tbody></tbody>
+							</table>
+							<small class="form-text">
+								Arguments are passed as an array, based on position
+							</small>
 						</div>
-						<div class="form-group flex-buttons" style="margin-bottom:0;">
-							<button id="invoke" type="button" class="btn btn-success btn-block">Invoke</button>
-							<button id="invokeAndPublish" type="button" class="btn btn-primary btn-block">Invoke And Publish</button>
+						<div class="d-flex gap-2">
+							<button type="button" class="btn btn-success w-50" data-action="invokeAndPublish">
+								Invoke And Publish
+							</button>
+							<button type="button" class="btn btn-secondary w-50" data-action="invoke">
+								Invoke
+							</button>
 						</div>
 					</div>
 				</form>
 			</div>
-			<div class="col">
-				<div class="well well-small" id="output">
-					<ul id="_console" class="list-unstyled">
-					</ul>
+		</div>
+		<div class="flex-grow-1 bg-light-subtle d-flex flex-column" id="console">
+			<nav class="navbar bg-body-tertiary border-bottom justify-content-start gap-1 p-1 flex-nowrap">
+				<button type="button" class="btn btn-sm btn-outline-primary border-0 d-md-none" data-bs-toggle="offcanvas" data-bs-target="#console-form" aria-controls="console-form">
+					<i class="fa-solid fa-fw fa-bars"></i>
+				</button>
+				<div class="d-flex gap-1 flex-wrap justify-content-md-center justify-content-start flex-grow-1">
+					<button type="button" class="btn btn-sm btn-outline-success" data-action="open-socket">
+						Open
+					</button>
+					<button type="button" class="btn btn-sm btn-outline-danger" data-action="stop-socket">
+						Close
+					</button>
+					<button type="button" class="btn btn-sm btn-outline-primary" data-action="check-socket">
+						Check
+					</button>
+					<button type="button" class="btn btn-sm btn-outline-primary" data-action="subscribers">
+						Subscribers
+					</button>
+					<button type="button" class="btn btn-sm btn-outline-primary" data-action="subscriptions">
+						Subscriptions
+					</button>
+					<button type="button" class="btn btn-sm btn-outline-dark" data-action="clear-log">
+						Clear
+					</button>
 				</div>
+			</nav>
+			<div id="log" class="p-2 flex-grow-1 pb-0"></div>
+		</div>
+	</main>
+
+	<div class="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="modal-label">Attention</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body text-center text-danger"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button>
+			</div>
 			</div>
 		</div>
 	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js" integrity="sha256-qq1ob4lpAizCQs1tkv5gttMXUlgpiHyvG3JcCIktRvs=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	<script src="assets/app.js"></script>
+
 	<cfoutput>
 		<datalist id="channels">
-			<cfloop array="#WSGetAllChannels()#" index="channel">
+			<cfloop array="#wsGetAllChannels()#" index="channel">
 				<option value="#channel#">
 			</cfloop>
 		</datalist>
@@ -116,15 +192,12 @@
 			<option value="p2p">
 		</datalist>
 	</cfoutput>
-	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/javascript.validation@1.4.0/dist/validation.min.js" integrity="sha256-5qaV59r5QeKBF0cklUsOXKWaTR4pg55q3RmFADaWhro=" crossorigin="anonymous"></script>
-	<script src="scripts.js"></script>
 
 	<!--- Remember to remove the cgi.server_port_secure check if using proxy --->
-	<cfwebsocket 	name="ws"
-					onMessage="onMessage"
-					onOpen="onOpen"
-					onError="onError" />
+	<cfwebsocket name      = "ws"
+				 onMessage = "WebSocketConsole.onMessage"
+				 onOpen    = "WebSocketConsole.onOpen"
+				 onError   = "WebSocketConsole.onError"
+				 secure    = "#cgi.server_port_secure#">
 </body>
 </html>

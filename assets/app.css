@@ -1,0 +1,33 @@
+textarea { resize:none; }
+main     { height: 100vh; }
+
+main:not(:has(.offcanvas-backdrop)){
+	#console-form,
+	#console {
+		width:calc( 50% - .25rem );
+		flex-shrink: 0;
+	}
+}
+
+#log{
+	font: normal .875rem / 1.42 'JetBrains Mono', Menlo, Consolas, monospace;
+	overflow-y: auto;
+
+	& > div {
+		border-radius: 0;
+		border-width: 2px 0 0 0;
+		margin: 0 0 .25rem;
+		opacity: .5;
+		overflow-x: auto;
+		white-space: pre-wrap;
+
+		&:last-child{
+			margin-bottom: 0;
+			opacity:1;
+		}
+	}
+}
+
+@media( min-width:1024px ){
+	#console-form { max-width: 512px; }
+}

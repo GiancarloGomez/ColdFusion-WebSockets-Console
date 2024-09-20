@@ -1,19 +1,24 @@
-component
-{
-	remote function publish()
-	{
-		sleep(3000);
-		return "This is the value returned from publish()";
+component {
+	remote function publish( string message = "", numeric delay = 0 ) {
+		var response = "communicate.publish()";
+		if ( arguments.delay ){
+			// make sure the delay is not more than 10 seconds
+			arguments.delay = min( arguments.delay, 10 );
+			sleep( arguments.delay * 1000 );
+			response &= " : delayed ( " & arguments.delay & " ) ";
+		}
+		if ( len( trim( arguments.message ) ) )
+			response &= " : message > " & arguments.message;
+		return response;
 	}
 
-	remote function p2p()
-	{
+	remote function p2p() {
 		thread name="backToInvoker_#createUUID()#" action="run"{
-			for (i = 1; i <= 10; i++){
-				sleep(1000);
-				WSSendMessage(i & " of 10 : I am only returning this to the P2P Client");
+			for ( var i = 1; i <= 10; i++ ){
+				sleep( 1000 );
+				wsSendMessage( i & " of 10 : I am only returning this to the P2P Client" );
 			}
 		}
-		return "This is the value returned from p2p()";
+		return "communicate.p2p()";
 	}
 }
