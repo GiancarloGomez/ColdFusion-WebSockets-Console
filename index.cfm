@@ -1,14 +1,19 @@
+<cfscript>
+	templateRoot = cgi.script_name.replace("index.cfm","");
+</cfscript>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<title>ColdFusion WebSockets Console</title>
-	<link rel="icon" href="assets/favicon.png">
-	<link rel="author" href="humans.txt">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css" integrity="sha256-XfA0ppGOANs88Ds+9FqVLy3xIGzT/25K/VLmRRxE9ow=" crossorigin="anonymous">
-	<link rel="stylesheet" href="assets/app.css">
+	<cfoutput>
+		<link rel="icon" href="#templateRoot#assets/favicon.png">
+		<link rel="author" href="humans.txt">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css" integrity="sha256-XfA0ppGOANs88Ds+9FqVLy3xIGzT/25K/VLmRRxE9ow=" crossorigin="anonymous">
+		<link rel="stylesheet" href="#templateRoot#assets/app.css">
+	</cfoutput>
 </head>
 <body>
 	<main class="d-flex gap-2 p-md-2">
@@ -27,8 +32,8 @@
 								Authentication
 							</label>
 							<div class="d-flex gap-2">
-								<input type="text" id="username" class="form-control" placeholder="Username">
-								<input type="password" id="password" class="form-control" placeholder="Password">
+								<input type="text" id="username" class="form-control" placeholder="Username" autocomplete="off" data-1p-ignore>
+								<input type="password" id="password" class="form-control" placeholder="Password" data-1p-ignore>
 							</div>
 							<small class="form-text">Use this if the channel you want to join requires it</small>
 						</div>
@@ -175,9 +180,9 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js" integrity="sha256-qq1ob4lpAizCQs1tkv5gttMXUlgpiHyvG3JcCIktRvs=" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-	<script src="assets/app.js"></script>
 
 	<cfoutput>
+		<script src="#templateRoot#assets/app.js"></script>
 		<datalist id="channels">
 			<cfloop array="#wsGetAllChannels()#" index="channel">
 				<option value="#channel#">
