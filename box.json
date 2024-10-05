@@ -1,0 +1,48 @@
+{
+    "name":"ColdFusion WebSockets Console",
+    "slug":"coldfusion-websockets-console",
+    "version":"1.0.0",
+    "author":"Giancarlo Gomez <giancarlo.gomez@gmail.com>",
+    "location":"forgeboxStorage",
+    "homepage":"https://github.com/GiancarloGomez/ColdFusion-WebSockets-Console",
+    "documentation":"https://github.com/GiancarloGomez/ColdFusion-WebSockets-Console",
+    "bugs":"https://github.com/GiancarloGomez/ColdFusion-WebSockets-Console/issues",
+    "shortDescription":"WebSockets Console for ColdFusion",
+    "description":"Drop In WebSockets Console for ColdFusion Applications to help with debugging and testing WebSockets",
+    "type":"projects",
+    "packageDirectory": "console",
+    "private":false,
+    "repository":{
+        "type":"git",
+        "URL":"https://github.com/GiancarloGomez/ColdFusion-WebSockets-Console"
+    },
+    "keywords":[
+        "WebSockets"
+    ],
+    "engines":[
+        {
+            "type":"adobe",
+            "version":">=11.0.0"
+        }
+    ],
+    "contributors":[
+        {
+            "name" : "Giancarlo Gomez",
+            "email" : "giancarlo.gomez@gmail.com",
+            "url" : "https://www.giancarlogomez.dev/"
+        }
+    ],
+    "ignore":[
+        "**/.*",
+        "/test/",
+        "/tests/",
+        "readme.md",
+        "LICENSE"
+    ],
+    "license":[
+        {
+            "type":"MIT",
+            "URL":"https://github.com/GiancarloGomez/ColdFusion-WebSockets-Console/blob/master/LICENSE"
+        }
+    ]
+}
